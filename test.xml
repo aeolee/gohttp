@@ -11,13 +11,13 @@
 <eventDescription>peopleCounting alarm</eventDescription>
 <channelName>可邑4号杆售票厅广场</channelName>
 <peopleCounting>
-<statisticalMethods>realTime</statisticalMethods>
-<RealTime>
-<time>2021-06-22T16:36:15+08:00</time>
-</RealTime>
-<enter>252</enter>
-<exit>261</exit>
-<pass>0</pass>
+    <statisticalMethods>realTime</statisticalMethods>
+    <RealTime>
+        <time>2021-06-22T16:36:15+08:00</time>
+    </RealTime>
+    <enter>252</enter>
+    <exit>261</exit>
+    <pass>0</pass>
 </peopleCounting>
 </EventNotificationAlert>
 
