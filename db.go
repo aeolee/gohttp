@@ -10,11 +10,17 @@ import (
 type dbObj struct {
 	db *sql.DB
 }
-type userInfo struct {
-	uid        int32
-	username   string
-	department string
-	created    string
+type DbWorker struct {
+	Dsn string
+}
+type countInfo struct {
+	ip          string
+	mac         string
+	channelName string
+	starTime    string
+	endTime     string
+	enter       int32
+	exit        int32
 }
 
 func init() {
@@ -31,7 +37,10 @@ func checkErr(err error, str string) {
 
 func (d *dbObj) Open() *sql.DB {
 	var err error
-	d.db, err = sql.Open("mysql", "godbdemo:mp3abc@tcp(localhost:3306)/godbdemo?charset=utf8")
+	dbw := DbWorker{
+		Dsn: "aeo:mp3abc@@@tcp(cd-cdb-99uyhax8.sql.tencentcdb.com:63118)/counting?charset=utf8"}
+	d.db, err = sql.Open("mysql", dbw.Dsn)
+
 	checkErr(err, "连接数据库失败")
 
 	return d.db
@@ -42,28 +51,32 @@ func Select() {
 	db := dbc.Open()
 	defer db.Close()
 
-	stmt, _ := db.Prepare("select department,`username` from userinfo where uid>?")
-	rows, _ := stmt.Query(99)
+	stmt, _ := db.Prepare("select ip, mac,channelName,starTime,endTime,enter,`leave` " +
+		"from people where ip>?")
+	rows, _ := stmt.Query("192.168.1.1")
 	defer rows.Close()
 
-	user := &userInfo{}
-
+	count := &countInfo{}
 	for rows.Next() {
-		err := rows.Scan(&user.username, &user.department)
+		err := rows.Scan(&count.ip, &count.mac, &count.channelName,
+			&count.starTime, &count.endTime, &count.enter, &count.exit)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println(user.username, ":", user.department)
+		fmt.Printf("\n%s 到 %s  进入人数:%4d    离开人数：%4d", count.starTime, count.endTime, count.enter, count.exit)
 	}
 }
 
-func Insert(info userInfo) {
+func Insert(info countInfo) {
 	dbc := &dbObj{}
 	db := dbc.Open()
 	defer db.Close()
 
-	stmt, err := db.Prepare("INSERT userinfo SET username=?,department=?,created=?")
-	result, err := stmt.Exec(info.username, info.department, info.created)
+	stmt, err := db.Prepare("INSERT INTO people SET ip=?,mac=?," +
+		"channelName=?,starTime=?,endTime=?,enter=?,`leave`=?")
+	checkErr(err, "sql语句有语法错误")
+	result, err := stmt.Exec(info.ip, info.mac, info.channelName, info.
+		starTime, info.endTime, info.enter, info.exit)
 	checkErr(err, "插入数据失败")
 	rowsaffected, err := result.RowsAffected()
 	checkErr(err, "获取受影响行数失败")
@@ -71,28 +84,9 @@ func Insert(info userInfo) {
 }
 
 func main() {
-
-	//info := userInfo{uid:0,username:"stone",department:"HR",created: "20210625"}
-	//Insert(info)
+	/*info := countInfo{ip:"192.168.1.31",mac:"10:12:fb:de:0b:00", channelName:"测试门",
+		starTime:"2021-06-25 15:10:00",endTime:"2021-06-25 15:15:00",enter:123,exit:101}
+	Insert(info)*/
 
 	Select()
-
-	/*stmt, err := db.Prepare("INSERT userinfo SET username=?,department=?,created=?")
-	checkErr(err)
-
-	for i := 1; i < 100; i++ {
-		res, err := stmt.Exec("技术", "研发部门", "20210624")
-		checkErr(err)
-		fmt.Println("技术 i==", i, "res===", res.RowsAffected())
-	}
-
-	res, err := stmt.Exec("技术","研发部门","20210624")
-	checkErr(err)
-
-	tests,err := res.RowsAffected()
-	checkErr(err)
-
-	fmt.Println(tests)
-
-	db.Close()*/
 }
