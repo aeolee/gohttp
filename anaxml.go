@@ -13,9 +13,9 @@ import (
 需要的数据为进入人数enter和离开人数exit。 其它所需信息节点为ipAddress、macAddress、channelName。
 */
 
-func main() {
+func Anaxml(xs string) {
 	var doc = etree.NewDocument()
-	if err := doc.ReadFromFile("test.xml"); err != nil {
+	if err := doc.ReadFromString(xs); err != nil {
 		panic(err)
 	}
 	//doc.WriteTo(os.Stdout)

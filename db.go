@@ -20,7 +20,7 @@ type countInfo struct {
 	starTime    string
 	endTime     string
 	enter       int32
-	exit        int32
+	leave       int32 //xml中使用exit表示离开人数，这里改用leave表示。
 }
 
 func init() {
@@ -59,11 +59,12 @@ func Select() {
 	count := &countInfo{}
 	for rows.Next() {
 		err := rows.Scan(&count.ip, &count.mac, &count.channelName,
-			&count.starTime, &count.endTime, &count.enter, &count.exit)
+			&count.starTime, &count.endTime, &count.enter, &count.leave)
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Printf("\n%s 到 %s  进入人数:%4d    离开人数：%4d", count.starTime, count.endTime, count.enter, count.exit)
+		fmt.Printf("\n%s 到 %s  进入人数:%4d    离开人数：%4d",
+			count.starTime, count.endTime, count.enter, count.leave)
 	}
 }
 
@@ -76,17 +77,18 @@ func Insert(info countInfo) {
 		"channelName=?,starTime=?,endTime=?,enter=?,`leave`=?")
 	checkErr(err, "sql语句有语法错误")
 	result, err := stmt.Exec(info.ip, info.mac, info.channelName, info.
-		starTime, info.endTime, info.enter, info.exit)
+		starTime, info.endTime, info.enter, info.leave)
 	checkErr(err, "插入数据失败")
 	rowsaffected, err := result.RowsAffected()
 	checkErr(err, "获取受影响行数失败")
 	fmt.Println("受影响行数：", rowsaffected)
 }
 
-func main() {
-	/*info := countInfo{ip:"192.168.1.31",mac:"10:12:fb:de:0b:00", channelName:"测试门",
+/*func main() {
+	info := countInfo{ip:"192.168.1.31",mac:"10:12:fb:de:0b:00", channelName:"测试门",
 		starTime:"2021-06-25 15:10:00",endTime:"2021-06-25 15:15:00",enter:123,exit:101}
-	Insert(info)*/
+	Insert(info)
 
 	Select()
 }
+*/
