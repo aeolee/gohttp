@@ -15,10 +15,10 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 		}
 	}(r.Body)
-	/*_, err := fmt.Fprintf(w, "This is HelloServer func")
+	_, err := fmt.Fprintf(w, "This is HelloServer func")
 	if err != nil {
 		return
-	}*/
+	}
 	s, _ := ioutil.ReadAll(r.Body)
 	xmlStr := string(s)
 	fmt.Println("This is from HelloServer func")
