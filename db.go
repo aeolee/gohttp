@@ -3,8 +3,8 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	_ "github.com/go-sql-driver/mysql"
 	"log"
-	_ "src/github.com/go-sql-driver/mysql"
 )
 
 type dbObj struct {

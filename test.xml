@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EventNotificationAlert version="1.0" xmlns="urn:psialliance-org">
-<ipAddress>192.168.1.56</ipAddress>
-<protocolType>HTTP</protocolType>
-<macAddress>10:12:fb:de:0b:0a</macAddress>
-<channelID>1</channelID>
-<dateTime>2021-06-22T16:36:15+08:00</dateTime>
-<activePostCount>994</activePostCount>
-<eventType>PeopleCounting</eventType>
-<eventState>active</eventState>
-<eventDescription>peopleCounting alarm</eventDescription>
-<channelName>可邑4号杆售票厅广场</channelName>
-<peopleCounting>
-    <statisticalMethods>realTime</statisticalMethods>
-    <RealTime>
-        <time>2021-06-22T16:36:15+08:00</time>
-    </RealTime>
-    <enter>252</enter>
-    <exit>261</exit>
-    <pass>0</pass>
-</peopleCounting>
+    <ipAddress>192.168.1.56</ipAddress>
+    <protocolType>HTTP</protocolType>
+    <macAddress>10:12:fb:de:0b:0a</macAddress>
+    <channelID>1</channelID>
+    <dateTime>2021-06-22T16:36:15+08:00</dateTime>
+    <activePostCount>994</activePostCount>
+    <eventType>PeopleCounting</eventType>
+    <eventState>active</eventState>
+    <eventDescription>peopleCounting alarm</eventDescription>
+    <channelName>可邑4号杆售票厅广场</channelName>
+    <peopleCounting>
+        <statisticalMethods>realTime</statisticalMethods>
+        <RealTime>
+            <time>2021-06-22T16:36:15+08:00</time>
+        </RealTime>
+        <enter>252</enter>
+        <exit>261</exit>
+        <pass>0</pass>
+    </peopleCounting>
 </EventNotificationAlert>
 
