@@ -7,6 +7,12 @@ import (
 	"log"
 )
 
+/*
+//数据库中数据为某时段增量，要进行求和后使用。记录一下，免得忘记。
+SELECT channelName as 位置, sum(enter) as 进入,sum(`leave`) as 离开 from people
+WHERE date(createTime) = curdate()
+GROUP BY ip;
+*/
 type dbObj struct {
 	db *sql.DB
 }

@@ -15,9 +15,9 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 		}
 	}(r.Body)
-	_, err := fmt.Fprintf(w, "This is HelloServer func")
+	_, err := fmt.Fprintf(w, "SUCCESSFUL!")
 	if err != nil {
-		return
+		checkErr(err, "远端无响应。")
 	}
 	s, _ := ioutil.ReadAll(r.Body)
 	xmlStr := string(s)
@@ -27,7 +27,7 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println("r.header is ", r.Header)
 	//fmt.Println("r.Body is \n", xmlStr)
 
-	count := ana(xmlStr)
+	count := TimeTrigger(xmlStr)
 
 	fmt.Printf("%s\nfrom %s to %s\n", count.channelName, count.starTime, count.endTime)
 	fmt.Printf("In:%d   Leave:%d\n", count.enter, count.leave)
