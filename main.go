@@ -31,7 +31,6 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("%s\nfrom %s to %s\n", count.channelName, count.starTime, count.endTime)
 	fmt.Printf("In:%d   Leave:%d\n", count.enter, count.leave)
-
 	Insert(*count)
 	//Select()
 }
