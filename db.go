@@ -29,10 +29,6 @@ type countInfo struct {
 	leave       int32 //xml中使用exit表示离开人数，这里改用leave表示。
 }
 
-func init() {
-	//
-}
-
 //简单的处理下错误，便于调试
 func checkErr(err error, str string) {
 	if err != nil {
@@ -44,7 +40,8 @@ func checkErr(err error, str string) {
 func (d *dbObj) Open() *sql.DB {
 	var err error
 	dbw := DbWorker{
-		Dsn: "aeo:mp3abc@@@tcp(cd-cdb-99uyhax8.sql.tencentcdb.com:63118)/counting?charset=utf8"}
+		Dsn: "aeo:mp3abc@@@tcp(cd-cdb-99uyhax8.sql.tencentcdb.com:" +
+			"63118)/counting?charset=utf8"}
 	d.db, err = sql.Open("mysql", dbw.Dsn)
 
 	checkErr(err, "连接数据库失败")

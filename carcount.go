@@ -54,7 +54,7 @@ func parseMultipartFormValue(formValues map[string][]string) {
 
 			m := make(map[string]string)
 			_ = json.NewDecoder(strings.NewReader(value)).Decode(&m)
-			log.Printf("      Formdata[%d]: json=[%v]\n", i, value)
+			log.Printf("      Formdata[%d]: \njson=[%v]\n", i, value)
 		}
 	}
 	return
