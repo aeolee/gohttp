@@ -1,9 +1,12 @@
 package main
 
 import (
+	"encoding/json"
+	"github.com/aeolee/cron"
 	"log"
 	"mime/multipart"
 	"net/http"
+	"strings"
 )
 
 func httpHandle(w http.ResponseWriter, r *http.Request) {
@@ -25,13 +28,21 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	/*data,err := ioutil.ReadAll(r.Body)
+	m := make(map[string]interface{})
+	if r.MultipartForm.Value != nil{
+		json.Unmarshal([]byte(data),&m)
+		fmt.Println(m["result"].(map[string]interface{})["A"].
+			([]interface{})[3].(map[string]interface{})["name"])
+	}*/
+
 	if r.MultipartForm.Value != nil {
 		parseMultipartFormValue(r.MultipartForm.Value)
 	}
 
-	if r.MultipartForm.File != nil {
+	/*if r.MultipartForm.File != nil {
 		parseMultipartFormFile(r, r.MultipartForm.File)
-	}
+	}*/
 }
 
 // 解析表单数据
@@ -39,13 +50,11 @@ func parseMultipartFormValue(formValues map[string][]string) {
 	for formName, values := range formValues {
 		log.Printf("Value formname: %s\n", formName)
 		for i, value := range values {
-			log.Printf("      formdata[%d]: content=[%s]\n", i, value)
+			//log.Printf("      formdata[%d]: content=[%s]\n", i, value)
 
-			/*
-				m := make(map[string]string)
-				_ = json.NewDecoder(strings.NewReader(value)).Decode(&m)
-				log.Printf("      Formdata[%d]: json=[%v]\n", i, value)
-			*/
+			m := make(map[string]string)
+			_ = json.NewDecoder(strings.NewReader(value)).Decode(&m)
+			log.Printf("      Formdata[%d]: json=[%v]\n", i, value)
 		}
 	}
 	return
@@ -85,4 +94,6 @@ func parseMultipartFormFile(r *http.Request, formFiles map[string][]*multipart.F
 func main() {
 	http.HandleFunc("/hikcar", httpHandle)
 	log.Fatal(http.ListenAndServe(":10180", nil))
+	c := cron.New()
+	c.Start()
 }
