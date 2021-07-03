@@ -10,7 +10,8 @@
   "eventState":   "active",
   "eventDescription":     "Mixed target detection",
   "channelName":  "可邑13号杆公路细节",
-  "CaptureResult":        [{"targetID":     3093,
+  "CaptureResult":        [{
+    "targetID":     3093,
     "Vehicle":      {
       "VehicleRect":  {
         "height":       0.375000,

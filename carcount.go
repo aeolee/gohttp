@@ -1,8 +1,9 @@
 package main
 
 import (
+	"codechina.csdn.net/mirrors/tidwall/gjson"
 	"encoding/json"
-	"github.com/aeolee/cron"
+	"fmt"
 	"log"
 	"mime/multipart"
 	"net/http"
@@ -28,21 +29,13 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	/*data,err := ioutil.ReadAll(r.Body)
-	m := make(map[string]interface{})
-	if r.MultipartForm.Value != nil{
-		json.Unmarshal([]byte(data),&m)
-		fmt.Println(m["result"].(map[string]interface{})["A"].
-			([]interface{})[3].(map[string]interface{})["name"])
-	}*/
+	if r.MultipartForm.File != nil {
+		imageType := parseMultipartFormFile(r, r.MultipartForm.File)
+		if imageType == "plateImage.jpg" {
+			parseMultipartFormValue(r.MultipartForm.Value)
+		}
 
-	if r.MultipartForm.Value != nil {
-		parseMultipartFormValue(r.MultipartForm.Value)
 	}
-
-	/*if r.MultipartForm.File != nil {
-		parseMultipartFormFile(r, r.MultipartForm.File)
-	}*/
 }
 
 // 解析表单数据
@@ -54,14 +47,26 @@ func parseMultipartFormValue(formValues map[string][]string) {
 
 			m := make(map[string]string)
 			_ = json.NewDecoder(strings.NewReader(value)).Decode(&m)
-			log.Printf("      Formdata[%d]: \njson=[%v]\n", i, value)
+			//log.Printf("      Formdata[%d]: \njson=[%v]\n", i, value)
+
+			/*var ve vehic
+			j  := []byte(value)
+			json.Unmarshal(j, &ve)
+			fmt.Printf("测试解析%s\n 车牌：%s\n",
+					ve[i].ChannelName,ve[0].CaptureResult[0].Vehicle.Property[2].Value)*/
+
+			plateNo:= gjson.Get(value, "CaptureResult.0.Vehicle.Property.2.value")
+			vehicleType := gjson.Get(value, "CaptureResult.0.Vehicle.Property.3.value")
+			fmt.Printf("通道名称：%s  车牌:%v  车辆类型：%v\n",
+				gjson.Get(value,"channelName"),plateNo.Value(),vehicleType.Value())
+
 		}
 	}
-	return
 }
 
 // 解析表单文件
-func parseMultipartFormFile(r *http.Request, formFiles map[string][]*multipart.FileHeader) {
+func parseMultipartFormFile(r *http.Request , formFiles map[string][]*multipart.FileHeader) string{
+	var imageType string
 	for formName := range formFiles {
 		// func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error)
 		// FormFile returns the first file for the provided form key
@@ -69,6 +74,10 @@ func parseMultipartFormFile(r *http.Request, formFiles map[string][]*multipart.F
 
 		log.Printf("File formname: %s, filename: %s, file length: %d\n",
 			formName, formFileHeader.Filename, formFileHeader.Size)
+		if formFileHeader.Filename == "plateImage.jpg"{
+			imageType = formFileHeader.Filename
+		}
+
 		/*
 			if strings.HasSuffix(formFileHeader.Filename, ".zip") {
 				zipReader, _ := zip.NewReader(formFile, formFileHeader.Size)
@@ -89,11 +98,10 @@ func parseMultipartFormFile(r *http.Request, formFiles map[string][]*multipart.F
 				log.Printf("     formfile: content=[%s]\n", strings.TrimSuffix(b.String(), "\n"))
 			}*/
 	}
+	return imageType
 }
 
 func main() {
 	http.HandleFunc("/hikcar", httpHandle)
 	log.Fatal(http.ListenAndServe(":10180", nil))
-	c := cron.New()
-	c.Start()
 }
