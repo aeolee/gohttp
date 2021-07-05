@@ -31,18 +31,19 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 
 	if r.MultipartForm.File != nil {
 		imageType := parseMultipartFormFile(r, r.MultipartForm.File)
-		if imageType == "plateImage.jpg" {
+		if imageType == "vehicleImage.jpg" {
 			parseMultipartFormValue(r.MultipartForm.Value)
 		}
+		if imageType == "nonMotorImage.jpg" {}
 
 	}
 }
 
-// 解析表单数据
+// parseMultipartFormValue解析表单数据
 func parseMultipartFormValue(formValues map[string][]string) {
-	for formName, values := range formValues {
-		log.Printf("Value formname: %s\n", formName)
-		for i, value := range values {
+	for _, values := range formValues {
+		//log.Printf("Value formname: %s\n", formName)
+		for _, value := range values {
 			//log.Printf("      formdata[%d]: content=[%s]\n", i, value)
 
 			m := make(map[string]string)
@@ -55,8 +56,9 @@ func parseMultipartFormValue(formValues map[string][]string) {
 			fmt.Printf("测试解析%s\n 车牌：%s\n",
 					ve[i].ChannelName,ve[0].CaptureResult[0].Vehicle.Property[2].Value)*/
 
+			//这里使用的绝对路径进行数据获取，相对来说实现起来比较快。
 			plateNo:= gjson.Get(value, "CaptureResult.0.Vehicle.Property.2.value")
-			vehicleType := gjson.Get(value, "CaptureResult.0.Vehicle.Property.3.value")
+			vehicleType := gjson.Get(value, `CaptureResult.0.Vehicle.Property.#(description="vehicleType").value`)
 			fmt.Printf("通道名称：%s  车牌:%v  车辆类型：%v\n",
 				gjson.Get(value,"channelName"),plateNo.Value(),vehicleType.Value())
 
@@ -64,7 +66,7 @@ func parseMultipartFormValue(formValues map[string][]string) {
 	}
 }
 
-// 解析表单文件
+// parseMultipartFormFile解析表单文件
 func parseMultipartFormFile(r *http.Request , formFiles map[string][]*multipart.FileHeader) string{
 	var imageType string
 	for formName := range formFiles {
@@ -74,9 +76,7 @@ func parseMultipartFormFile(r *http.Request , formFiles map[string][]*multipart.
 
 		log.Printf("File formname: %s, filename: %s, file length: %d\n",
 			formName, formFileHeader.Filename, formFileHeader.Size)
-		if formFileHeader.Filename == "plateImage.jpg"{
-			imageType = formFileHeader.Filename
-		}
+		imageType = formFileHeader.Filename
 
 		/*
 			if strings.HasSuffix(formFileHeader.Filename, ".zip") {
