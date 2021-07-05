@@ -31,10 +31,15 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 
 	if r.MultipartForm.File != nil {
 		imageType := parseMultipartFormFile(r, r.MultipartForm.File)
-		if imageType == "vehicleImage.jpg" {
+		if imageType == "plateImage.jpg" {
 			parseMultipartFormValue(r.MultipartForm.Value)
 		}
-		if imageType == "nonMotorImage.jpg" {}
+		if imageType == "nonMotorImage.jpg" {
+			//记录类型
+		}
+		if imageType == "vehicleImage"{
+			//无车牌信息的车辆记录类型
+		}
 
 	}
 }
@@ -76,7 +81,15 @@ func parseMultipartFormFile(r *http.Request , formFiles map[string][]*multipart.
 
 		log.Printf("File formname: %s, filename: %s, file length: %d\n",
 			formName, formFileHeader.Filename, formFileHeader.Size)
-		imageType = formFileHeader.Filename
+		if formFileHeader.Filename == "plateImage.jpg" {
+			imageType = formFileHeader.Filename
+		}else if formFileHeader.Filename == "nonMotorImage.jpg"{
+			imageType = "nonMotorImage.jpg"
+		}else if formFileHeader.Filename == "vehicleImage.jpg" {
+			if imageType != "plateImage.jpg"{ imageType = "vehicleImage.jpg"}
+		}
+
+
 
 		/*
 			if strings.HasSuffix(formFileHeader.Filename, ".zip") {
