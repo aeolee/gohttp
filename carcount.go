@@ -30,6 +30,7 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if r.MultipartForm.File != nil {
+		//将图片文件名称传入解析函数，通过抓拍到的内容进行不同的处理。
 		imageType := parseMultipartFormFile(r, r.MultipartForm.File)
 		parseMultipartFormValue(r.MultipartForm.Value,imageType)
 	}

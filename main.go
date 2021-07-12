@@ -29,9 +29,14 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 
 	count := TimeTrigger(xmlStr)
 
-	fmt.Printf("%s\nfrom %s to %s\n", count.channelName, count.starTime, count.endTime)
-	fmt.Printf("In:%d   Leave:%d\n", count.enter, count.leave)
-	Insert(*count)
+	//排除对数据库插入进出流量都为零的数据
+	if count.enter == 0 && count.leave == 0 {
+		fmt.Printf("%s 当前时段（5分钟）无客流量。\n",count.channelName)
+	}else {
+		fmt.Printf("%s\nfrom %s to %s\n", count.channelName, count.starTime, count.endTime)
+		fmt.Printf("In:%d   Leave:%d\n", count.enter, count.leave)
+		Insert(*count)
+	}
 	//Select()
 }
 func main() {
