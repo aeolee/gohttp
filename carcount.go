@@ -31,21 +31,12 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 
 	if r.MultipartForm.File != nil {
 		imageType := parseMultipartFormFile(r, r.MultipartForm.File)
-		if imageType == "plateImage.jpg" {
-			parseMultipartFormValue(r.MultipartForm.Value)
-		}
-		if imageType == "nonMotorImage.jpg" {
-			//记录类型
-		}
-		if imageType == "vehicleImage"{
-			//无车牌信息的车辆记录类型
-		}
-
+		parseMultipartFormValue(r.MultipartForm.Value,imageType)
 	}
 }
 
 // parseMultipartFormValue解析表单数据
-func parseMultipartFormValue(formValues map[string][]string) {
+func parseMultipartFormValue(formValues map[string][]string,imageType string) {
 	for _, values := range formValues {
 		//log.Printf("Value formname: %s\n", formName)
 		for _, value := range values {
@@ -62,11 +53,22 @@ func parseMultipartFormValue(formValues map[string][]string) {
 					ve[i].ChannelName,ve[0].CaptureResult[0].Vehicle.Property[2].Value)*/
 
 			//这里使用的绝对路径进行数据获取，相对来说实现起来比较快。
-			plateNo:= gjson.Get(value, "CaptureResult.0.Vehicle.Property.2.value")
-			vehicleType := gjson.Get(value, `CaptureResult.0.Vehicle.Property.#(description="vehicleType").value`)
-			fmt.Printf("通道名称：%s  车牌:%v  车辆类型：%v\n",
-				gjson.Get(value,"channelName"),plateNo.Value(),vehicleType.Value())
-
+			//目前有用数据很少，直接获取即可
+			if imageType == "plateImage.jpg" {
+				plateNo := gjson.Get(value, "CaptureResult.0.Vehicle.Property.2.value")
+				vehicleType := gjson.Get(value, `CaptureResult.0.Vehicle.Property.#(description="vehicleType").value`)
+				fmt.Printf("通道名称：%s  车牌:%v  车辆类型：%v\n",
+					gjson.Get(value, "channelName"), plateNo.Value(), vehicleType.Value())
+			}else if imageType == "faceImage.jpg"{
+				humanAge := gjson.Get(value, `CaptureResult.0.Face.Property.#(description="age").value`)
+				humanGender := gjson.Get(value, `CaptureResult.0.Face.Property.#(description="gender").value`)
+				vehicleType := gjson.Get(value, `CaptureResult.0.NonMotor.Property.#(description="nonMotorType").value`)
+				fmt.Printf("通道名称：%s  车辆类型：%v 性别：%s 年龄：%.0f \n",
+					gjson.Get(value, "channelName"), vehicleType.Value(),
+					humanGender.Value(),humanAge.Value())
+			}else if imageType == "vehicleImage.jpg"{
+				//
+			}
 		}
 	}
 }
@@ -79,14 +81,15 @@ func parseMultipartFormFile(r *http.Request , formFiles map[string][]*multipart.
 		// FormFile returns the first file for the provided form key
 		_, formFileHeader, _ := r.FormFile(formName)
 
-		log.Printf("File formname: %s, filename: %s, file length: %d\n",
-			formName, formFileHeader.Filename, formFileHeader.Size)
+
 		if formFileHeader.Filename == "plateImage.jpg" {
 			imageType = formFileHeader.Filename
-		}else if formFileHeader.Filename == "nonMotorImage.jpg"{
-			imageType = "nonMotorImage.jpg"
+		}else if formFileHeader.Filename == "faceImage.jpg"{
+			imageType = "faceImage.jpg"
 		}else if formFileHeader.Filename == "vehicleImage.jpg" {
-			if imageType != "plateImage.jpg"{ imageType = "vehicleImage.jpg"}
+			if imageType != "plateImage.jpg"{
+				log.Printf("File formname: %s, filename: %s, file length: %d\n",
+					formName, formFileHeader.Filename, formFileHeader.Size)}
 		}
 
 
