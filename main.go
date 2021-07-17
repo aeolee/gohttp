@@ -27,6 +27,7 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println("r.header is ", r.Header)
 	//fmt.Println("r.Body is \n", xmlStr)
 
+
 	count := TimeTrigger(xmlStr)
 
 	//排除对数据库插入进出流量都为零的数据

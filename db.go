@@ -29,6 +29,15 @@ type countInfo struct {
 	leave       int32 //xml中使用exit表示离开人数，这里改用leave表示。
 }
 
+type carInfo struct {
+	ip          string
+	mac         string
+	channelName string
+	starTime    string
+	enter       int32
+	leave       int32
+}
+
 //简单的处理下错误，便于调试
 func checkErr(err error, str string) {
 	if err != nil {
@@ -81,6 +90,22 @@ func Insert(info countInfo) {
 	checkErr(err, "sql语句有语法错误")
 	result, err := stmt.Exec(info.ip, info.mac, info.channelName, info.
 		starTime, info.endTime, info.enter, info.leave)
+	checkErr(err, "插入数据失败")
+	rowsaffected, err := result.RowsAffected()
+	checkErr(err, "获取受影响行数失败")
+	fmt.Println("受影响行数：", rowsaffected)
+}
+
+func InsertCar(info carInfo) {
+	dbc := &dbObj{}
+	db := dbc.Open()
+	defer db.Close()
+
+	stmt, err := db.Prepare("INSERT INTO people SET ip=?,mac=?," +
+		"channelName=?,starTime=?,endTime=?,enter=?,`leave`=?")
+	checkErr(err, "sql语句有语法错误")
+	result, err := stmt.Exec(info.ip, info.mac, info.channelName, info.
+		starTime, info.enter, info.leave)
 	checkErr(err, "插入数据失败")
 	rowsaffected, err := result.RowsAffected()
 	checkErr(err, "获取受影响行数失败")
