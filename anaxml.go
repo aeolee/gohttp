@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/beevik/etree"
 	"strconv"
 )
@@ -15,7 +14,8 @@ import (
 需要的数据为进入人数enter和离开人数exit。 其它所需信息节点为ipAddress、macAddress、channelName。
 */
 
-func ana(xs string) *countInfo {
+//Parse a XML document at the period of time
+func period(xs string) *countInfo {
 	count := countInfo{}
 	doc := etree.NewDocument()
 	if err := doc.ReadFromString(xs); err != nil {
@@ -39,7 +39,7 @@ func ana(xs string) *countInfo {
 	return &count
 }
 
-func Anaxml(xs string) {
+/*func real(xs string) {
 	var doc = etree.NewDocument()
 	err := doc.ReadFromString(xs)
 	if err != nil {
@@ -49,6 +49,7 @@ func Anaxml(xs string) {
 	root := doc.SelectElement("EventNotificationAlert")
 	if root == nil {
 		fmt.Println("Get root fail")
+		panic(err)
 	}
 	pc := root.SelectElement("peopleCounting")
 
@@ -66,4 +67,4 @@ func Anaxml(xs string) {
 
 	fmt.Println(pc.SelectElement("channelName").Text())
 	fmt.Println("enter:", inNm, "  exit ", count.leave)
-}
+}*/

@@ -27,12 +27,15 @@ func HelloServer(w http.ResponseWriter, r *http.Request) {
 	//fmt.Println("r.header is ", r.Header)
 	//fmt.Println("r.Body is \n", xmlStr)
 
-	count := ana(xmlStr)
+	count := period(xmlStr)
 
-	fmt.Printf("%s\nfrom %s to %s\n", count.channelName, count.starTime, count.endTime)
-	fmt.Printf("In:%d   Leave:%d\n", count.enter, count.leave)
-
-	Insert(*count)
+	if count.enter == 0 && count.leave == 0 {
+		fmt.Printf("%s Not tourist in during this time(five minutes)  %s\n",count.channelName,count.endTime)
+	}else {
+		fmt.Printf("%s\nfrom %s to %s\n", count.channelName, count.starTime, count.endTime)
+		fmt.Printf("In:%d   Leave:%d\n", count.enter, count.leave)
+		Insert(*count)
+	}
 	//Select()
 }
 func main() {
