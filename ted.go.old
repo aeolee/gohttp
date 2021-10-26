@@ -1,0 +1,214 @@
+package main
+
+import (
+	"archive/zip"
+	"bufio"
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"github.com/tidwall/gjson"
+	"golang.org/x/net/html/charset"
+	"golang.org/x/text/encoding"
+	"golang.org/x/text/encoding/unicode"
+	"io"
+	"io/ioutil"
+	"log"
+	"mime/multipart"
+	"net/http"
+	"strings"
+)
+
+
+func httpHandle(w http.ResponseWriter, r *http.Request) {
+	// http.Request has a member MultipartForm, it's defined as:
+	// MultipartForm *multipart.Form
+	// type Form struct {
+	//    Value map[string][]string
+	//    File  map[string][]*FileHeader
+	// }
+	defer func(Body io.ReadCloser) {
+		err := Body.Close()
+		if err != nil {
+		}
+	}(r.Body)
+	_, err := fmt.Fprintf(w, "SUCCESSFUL!")
+	if err != nil {
+		checkErr(err, "远端无响应。")
+	}
+	fmt.Printf("content-type is %s\n", r.Header.Get("content-type"))
+	//fmt.Printf("%v\n",r.Body)
+	////这里可以针对content-type分别进行相应处理.
+	//s, _ := ioutil.ReadAll(r.Body)
+	////xmlStr := string(s)
+	//if !gjson.Valid(string(s)) {
+	//	fmt.Println("Body isn't a json")
+	//	bodyReader := bufio.NewReader(r.Body)
+	//	e := determineEncoding(bodyReader)
+	//	fmt.Printf("Encoding is %v\n", e)
+	//} else {
+	//	fmt.Println("ok")
+	//	fmt.Println("r.Body is \n", s)
+	//}
+
+	//fmt.Printf("r.Body is %s\n", s)
+
+
+
+	err := r.ParseMultipartForm(1048576)
+	if err != nil {
+		log.Printf("Cannot ParseMultipartForm, error: %v\n", err)
+		return
+	}
+
+	if r.MultipartForm == nil {
+		log.Printf("MultipartForm is null\n")
+		return
+	}
+
+	if r.MultipartForm.File != nil {
+		//将图片文件名称传入解析函数，通过抓拍到的内容进行不同的处理。
+		imageType := parseMultipartFormFile(r, r.MultipartForm.File)
+		parseMultipartFormValue(r.MultipartForm.Value,imageType)
+	}
+
+
+	//var tag = r.PostFormValue("tag")
+	//r.ParseMultipartForm(10 << 20) 	//10mb
+	//files := r.MultipartForm.File["file"]
+	//
+	//length := len(files)
+	//if length == 0 {
+	//	//....
+	//	return
+	//}
+	//
+	////limite the file size cant more than 500kb
+	//for i := 0; i < length; i++ {
+	//	size := files[i].Size
+	//	name := files[i].Filename
+	//	fmt.Printf("%v\n",name)
+	//	if size > 500<<10 {
+	//		//....
+	//		continue
+	//	}
+	//
+	//
+	//	//read the file name and limit the file type in image
+	//	file, err := files[i].Open()
+	//	defer file.Close()
+	//	ext := strings.ToLower(path.Ext(files[i].Filename))
+	//	if ext != ".jpg" && ext != ".png" {
+	//		//....
+	//		continue
+	//	}
+	//
+	//	//open the floder and save the file
+	//	os.Mkdir("./driver-test/"+tag, os.ModePerm)
+	//	cur, err := os.Create(name)
+	//	defer cur.Close()
+	//	if err != nil {
+	//		log.Fatal(err)
+	//	}
+	//	io.Copy(cur, file)
+	//
+	//}
+
+}
+
+// parseMultipartFormValue解析表单数据
+func parseMultipartFormValue(formValues map[string][]string,imageType string) {
+	for _, values := range formValues {
+		//log.Printf("Value formname: %s\n", formName)
+		for _, value := range values {
+			//log.Printf("      formdata[%d]: content=[%s]\n", i, value)
+
+			m := make(map[string]string)
+			_ = json.NewDecoder(strings.NewReader(value)).Decode(&m)
+			//log.Printf("      Formdata[%d]: \njson=[%v]\n", i, value)
+
+			/*var ve vehic
+			j  := []byte(value)
+			json.Unmarshal(j, &ve)
+			fmt.Printf("测试解析%s\n 车牌：%s\n",
+					ve[i].ChannelName,ve[0].CaptureResult[0].Vehicle.Property[2].Value)*/
+
+			//这里使用的绝对路径进行数据获取，相对来说实现起来比较快。
+			//目前有用数据很少，直接获取即可
+			if imageType == "plateImage.jpg" {
+				plateNo := gjson.Get(value, "CaptureResult.0.Vehicle.Property.2.value")
+				vehicleType := gjson.Get(value, `CaptureResult.0.Vehicle.Property.#(description="vehicleType").value`)
+				fmt.Printf("通道名称：%s  车牌:%v  车辆类型：%v\n",
+					gjson.Get(value, "channelName"), plateNo.Value(), vehicleType.Value())
+			}else if imageType == "faceImage.jpg"{
+				humanAge := gjson.Get(value, `CaptureResult.0.Face.Property.#(description="age").value`)
+				humanGender := gjson.Get(value, `CaptureResult.0.Face.Property.#(description="gender").value`)
+				vehicleType := gjson.Get(value, `CaptureResult.0.NonMotor.Property.#(description="nonMotorType").value`)
+				fmt.Printf("通道名称：%s  车辆类型：%v 性别：%s 年龄：%.0f \n",
+					gjson.Get(value, "channelName"), vehicleType.Value(),
+					humanGender.Value(),humanAge.Value())
+			}else if imageType == "vehicleImage.jpg"{
+				//
+			}
+		}
+	}
+}
+
+
+
+// parseMultipartFormFile解析表单文件
+func parseMultipartFormFile(r *http.Request , formFiles map[string][]*multipart.FileHeader) string {
+	var imageType string
+	for formName := range formFiles {
+		// func (r *Request) FormFile(key string) (multipart.File, *multipart.FileHeader, error)
+		// FormFile returns the first file for the provided form key
+		_, formFileHeader, _ := r.FormFile(formName)
+
+		if formFileHeader.Filename == "plateImage.jpg" {
+			imageType = formFileHeader.Filename
+		} else if formFileHeader.Filename == "faceImage.jpg" {
+			imageType = "faceImage.jpg"
+		} else if formFileHeader.Filename == "vehicleImage.jpg" {
+			if imageType != "plateImage.jpg" {
+				log.Printf("File formname: %s, filename: %s, file length: %d\n",
+					formName, formFileHeader.Filename, formFileHeader.Size)
+			}
+		}
+
+		//if strings.HasSuffix(formFileHeader.Filename, ".zip") {
+		//	zipReader, _ := zip.NewReader(formFile, formFileHeader.Size)
+		//	for i, zipMember := range zipReader.File {
+		//		f, _ := zipMember.Open()
+		//		defer f.Close()
+		//
+		//		if zipMember.FileInfo().IsDir() {
+		//			log.Printf("     formfile[%d]: filename=[%s], ISDIR\n", i, zipMember.Name)
+		//		} else {
+		//			buf, _ := ioutil.ReadAll(f)
+		//			log.Printf("     formfile[%d]: filename=[%s], size=%d, content=[%s]\n", i, zipMember.Name, len(buf), strings.TrimSuffix(string(buf), "\n"))
+		//		}
+		//	}
+		//} else {
+		//	var b bytes.Buffer
+		//	_, _ = io.Copy(&b, formFile)
+		//	log.Printf("     formfile: content=[%s]\n", strings.TrimSuffix(b.String(), "\n"))
+		//}
+	}
+	return imageType
+}
+
+func determineEncoding(r *bufio.Reader) encoding.Encoding {
+	bytes, err := r.Peek(1024)
+	if err != nil {
+		fmt.Printf("err %v", err)
+		return unicode.UTF8
+	}
+
+	e, _, _ := charset.DetermineEncoding(bytes, "")
+
+	return e
+}
+
+func main() {
+	http.HandleFunc("/hikcar", httpHandle)
+	log.Fatal(http.ListenAndServe(":10180", nil))
+}

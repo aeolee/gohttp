@@ -1,24 +1,24 @@
+
 package main
 
 import (
-	"encoding/json"
-	"fmt"
-	"github.com/tidwall/gjson"
-	"io"
-	"io/ioutil"
-	"log"
-	"mime/multipart"
-	"net/http"
-	"strings"
+"encoding/json"
+"fmt"
+"github.com/tidwall/gjson"
+"io"
+"log"
+"mime/multipart"
+"net/http"
+"strings"
 )
 
 func httpHandle(w http.ResponseWriter, r *http.Request) {
 	// http.Request has a member MultipartForm, it's defined as:
-	// MultipartForm *multipart.Form
-	// type Form struct {
-	//    Value map[string][]string
-	//    File  map[string][]*FileHeader
-	// }
+	//MultipartForm *multipart.Form
+	//type Form struct {
+	//   Value map[string][]string
+	//   File  map[string][]*FileHeader
+	//}
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
@@ -28,27 +28,31 @@ func httpHandle(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		checkErr(err, "远端无响应。")
 	}
-	s, _ := ioutil.ReadAll(r.Body)
-	xmlStr := string(s)
-	fmt.Println("r.Body is \n", xmlStr)
+	//s, _ := ioutil.ReadAll(r.Body)
+	//xmlStr := string(s)
+	//fmt.Println("r.Body is \n", xmlStr)
 
 
-	//err := r.ParseMultipartForm(1048576)
-	//if err != nil {
-	//	log.Printf("Cannot ParseMultipartForm, error: %v\n", err)
-	//	return
-	//}
-	//
-	//if r.MultipartForm == nil {
-	//	log.Printf("MultipartForm is null\n")
-	//	return
-	//}
-	//
-	//if r.MultipartForm.File != nil {
-	//	//将图片文件名称传入解析函数，通过抓拍到的内容进行不同的处理。
-	//	imageType := parseMultipartFormFile(r, r.MultipartForm.File)
-	//	parseMultipartFormValue(r.MultipartForm.Value,imageType)
-	//}
+	err = nil
+	fmt.Printf("%s\n",r.Header.Values("Content-Type"))
+	err = r.ParseMultipartForm(1048576)
+	if err != nil {
+		log.Printf("Cannot ParseMultipartForm, error: %v\n", err)
+		return
+	}
+
+	fmt.Printf("报文类型正确\n")
+	if r.MultipartForm == nil {
+		log.Printf("MultipartForm is null\n")
+		return
+	}
+
+	if r.MultipartForm.File != nil {
+		//将图片文件名称传入解析函数，通过抓拍到的内容进行不同的处理。
+		fmt.Printf("报文中有文件,调用解析函数\n")
+		imageType := parseMultipartFormFile(r, r.MultipartForm.File)
+		parseMultipartFormValue(r.MultipartForm.Value,imageType)
+	}
 }
 
 // parseMultipartFormValue解析表单数据
@@ -97,6 +101,8 @@ func parseMultipartFormFile(r *http.Request , formFiles map[string][]*multipart.
 		// FormFile returns the first file for the provided form key
 		_, formFileHeader, _ := r.FormFile(formName)
 
+		fmt.Printf("%s\n",formFileHeader.Filename)
+
 
 		if formFileHeader.Filename == "plateImage.jpg" {
 			imageType = formFileHeader.Filename
@@ -133,7 +139,8 @@ func parseMultipartFormFile(r *http.Request , formFiles map[string][]*multipart.
 	return imageType
 }
 
-func main() {
-	http.HandleFunc("/hikcar", httpHandle)
-	log.Fatal(http.ListenAndServe(":10180", nil))
-}
+//func main() {
+//	http.HandleFunc("/hikcar", httpHandle)
+//	log.Fatal(http.ListenAndServe(":10180", nil))
+//}
+
