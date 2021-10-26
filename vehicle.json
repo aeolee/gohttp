@@ -1,0 +1,63 @@
+[{
+  "dateTime":     "2021-06-29T19:09:48+08:00",
+  "ipAddress":    "192.168.1.71",
+  "protocol":     "HTTP",
+  "macAddress":   "10:12:fb:df:5f:50",
+  "channelID":    1,
+  "deviceID":     "E79672102",
+  "activePostCount":      1,
+  "eventType":    "mixedTargetDetection",
+  "eventState":   "active",
+  "eventDescription":     "Mixed target detection",
+  "channelName":  "可邑13号杆公路细节",
+  "CaptureResult":        [{
+    "targetID":     3093,
+    "Vehicle":      {
+      "VehicleRect":  {
+        "height":       0.375000,
+        "width":        0.222000,
+        "x":    0.331000,
+        "y":    0.559000
+      },
+      "PlateRect":    {
+        "height":       0.029000,
+        "width":        0.051000,
+        "x":    0.397000,
+        "y":    0.750000
+      },
+      "Property":     [{
+        "description":  "plateType",
+        "value":        "92TypeCivil"
+      }, {
+        "description":  "plateColor",
+        "value":        "blue"
+      }, {
+        "description":  "plateNo",
+        "value":        "云GJE387"
+      }, {
+        "description":  "vehicleType",
+        "value":        "SUVMPV"
+      }, {
+        "description":  "vehicleColor",
+        "value":        "white"
+      }, {
+        "description":  "vehicleLogo",
+        "value":        "1549"
+      }, {
+        "description":  "vehicleSublogo",
+        "value":        "15"
+      }, {
+        "description":  "vehicleModel",
+        "value":        "1"
+      }, {
+        "description":  "confidence",
+        "value":        97.500000
+      }],
+      "contentID1":   "vehicleImage",
+      "contentID2":   "plateImage",
+      "pId1": "2021062919095581100N4SHUcO3H7cY",
+      "pId2": "2021062919095581100T9vY9F9K6XVX"
+    },
+    "uid":  "2021062919095581000y0DxrbfV0pfrSeKl1fFqtuYPN8D2IF20cVKF1c5bwu4w"
+  }]
+}]

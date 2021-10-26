@@ -1,0 +1,137 @@
+[{
+  "dateTime":     "2021-06-29T18:29:09+08:00",
+  "ipAddress":    "192.168.1.71",
+  "protocol":     "HTTP",
+  "macAddress":   "10:12:fb:df:5f:50",
+  "channelID":    1,
+  "deviceID":     "E79672102",
+  "activePostCount":      1,
+  "eventType":    "mixedTargetDetection",
+  "eventState":   "active",
+  "eventDescription":     "Mixed target detection",
+  "channelName":  "可邑13号杆公路细节",
+  "CaptureResult":        [{
+    "targetID":     3026,
+    "Human":        {
+      "Rect": {
+        "height":       0.287000,
+        "width":        0.072000,
+        "x":    0.245000,
+        "y":    0.637000
+      },
+      "Property":     [{
+        "description":  "jacketColor",
+        "value":        "purple"
+      }, {
+        "description":  "trousersColor",
+        "value":        "unknown"
+      }, {
+        "description":  "glass",
+        "value":        "no"
+      }, {
+        "description":  "gender",
+        "value":        "male"
+      }, {
+        "description":  "bag",
+        "value":        "no"
+      }, {
+        "description":  "things",
+        "value":        "unknown"
+      }, {
+        "description":  "hat",
+        "value":        "no"
+      }, {
+        "description":  "jacketType",
+        "value":        "longSleeve"
+      }, {
+        "description":  "trousersType",
+        "value":        "unknown"
+      }, {
+        "description":  "mask",
+        "value":        "no"
+      }, {
+        "description":  "hairStyle",
+        "value":        "shortHair"
+      }, {
+        "description":  "ageGroup",
+        "value":        "prime"
+      }, {
+        "description":  "ride",
+        "value":        "yes"
+      }, {
+        "description":  "cyclingPersonNumber",
+        "value":        "onePerson"
+      }, {
+        "description":  "direction",
+        "value":        "backward"
+      }, {
+        "description":  "score",
+        "value":        1715
+      }],
+      "contentID1":   "nonMotorImage",
+      "pId1": "20210629182910648003TjPfv18v4rh"
+    },
+    "NonMotor":     {
+      "Rect": {
+        "height":       0.287000,
+        "width":        0.072000,
+        "x":    0.245000,
+        "y":    0.637000
+      },
+      "Property":     [{
+        "description":  "nonMotorType",
+        "value":        "twoWheelVehicle"
+      }],
+      "contentID1":   "nonMotorImage",
+      "pId1": "20210629182910648003TjPfv18v4rh"
+    },
+    "Face": {
+      "Rect": {
+        "height":       0.027000,
+        "width":        0.016000,
+        "x":    0.178000,
+        "y":    0.815000
+      },
+      "Property":     [{
+        "description":  "age",
+        "value":        28
+      }, {
+        "description":  "ageGroup",
+        "value":        "prime"
+      }, {
+        "description":  "gender",
+        "value":        "male"
+      }, {
+        "description":  "glass",
+        "value":        "no"
+      }, {
+        "description":  "mask",
+        "value":        "no"
+      }, {
+        "description":  "hat",
+        "value":        "no"
+      }, {
+        "description":  "beard",
+        "value":        "no"
+      }, {
+        "description":  "race",
+        "value":        "asians"
+      }, {
+        "description":  "faceExpression",
+        "value":        "poker-faced"
+      }, {
+        "description":  "score",
+        "value":        25
+      }],
+      "contentID1":   "faceImage",
+      "pId1": "2021062918291064800OlPdQ7JkUknf",
+      "FacePictureRect":      {
+        "height":       0.085000,
+        "width":        0.058000,
+        "x":    0.158000,
+        "y":    0.785000
+      }
+    },
+    "uid":  "2021062918291064800SCQ8soqCH3485fNcK9iw5C0H9XmZYuLt0v5LCGTPd137"
+  }]
+}]
